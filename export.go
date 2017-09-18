@@ -62,7 +62,6 @@ func ExportFeaturesToS3(sess *session.Session, done <-chan struct{}, featureChan
 			log.Printf("%v: Elapsed %v; Batch %v", iteration, time.Since(start), time.Since(loopStart))
 			loopStart = time.Now()
 			batch = []BoardFeaturesAndResult{}
-			break
 		}
 	}
 	if len(batch) > 1e4 {
