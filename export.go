@@ -16,7 +16,7 @@ import (
 
 const BATCH_SIZE = 1e6
 const BUCKET_NAME = "chessbot"
-const KEY_FORMAT = "inputs/%v.csv.gz"
+const KEY_FORMAT = "inputs/%v.json.gz"
 
 type Inputs struct {
 	Inputs []BoardFeaturesAndResult `json:"inputs"`
