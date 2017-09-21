@@ -2,7 +2,6 @@ package main
 
 import (
 	"compress/gzip"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -12,15 +11,12 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/tinylib/msgp/msgp"
 )
 
 const BATCH_SIZE = 1e6
 const BUCKET_NAME = "chessbot"
-const KEY_FORMAT = "inputs/%v.json.gz"
-
-type Inputs struct {
-	Inputs []BoardFeaturesAndResult `json:"inputs"`
-}
+const KEY_FORMAT = "input/%v.msgp.gz"
 
 func ExportFeaturesToS3(sess *session.Session, done <-chan struct{}, featureChannels ...<-chan *BoardFeaturesAndResult) {
 	start := time.Now()
@@ -72,23 +68,27 @@ func ExportFeaturesToS3(sess *session.Session, done <-chan struct{}, featureChan
 func flushToS3(sess *session.Session, batch []BoardFeaturesAndResult) {
 	r, w := io.Pipe()
 
-	inputs := Inputs{Inputs: batch}
-
 	uploader := s3manager.NewUploader(sess)
 	keyName := fmt.Sprintf(KEY_FORMAT, time.Now().Unix())
 
-	go func(inputs *Inputs) {
+	go func(batch []BoardFeaturesAndResult) {
 		gz := gzip.NewWriter(w)
+		wm := msgp.NewWriter(gz)
+
 		defer func() {
 			gz.Close()
 			w.Close()
 		}()
 
-		err := json.NewEncoder(gz).Encode(inputs)
-		if err != nil {
-			log.Printf("Error marshalling inputs to JSON: %v", err)
+		for _, input := range batch {
+			err := input.EncodeMsg(wm)
+			if err != nil {
+				log.Printf("Error marshalling inputs to msgpack: %v", err)
+				continue
+			}
+			wm.Flush()
 		}
-	}(&inputs)
+	}(batch)
 
 	log.Println("Uploading...")
 	_, err := uploader.Upload(&s3manager.UploadInput{

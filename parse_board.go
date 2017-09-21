@@ -6,6 +6,8 @@ import (
 	"gopkg.in/freeeve/pgn.v1"
 )
 
+//go:generate msgp -o=input.go -marshal=false
+
 const DIMENSION = 8*8*12 + 1
 
 var PIECES = [12]pgn.Piece{
