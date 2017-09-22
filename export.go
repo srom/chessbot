@@ -87,6 +87,7 @@ func flushToS3(sess *session.Session, batch []BoardFeaturesAndResult) {
 				continue
 			}
 			wm.Flush()
+
 		}
 	}(batch)
 
