@@ -7,7 +7,7 @@ MODEL_PREFIX = "chessbot"
 
 
 def load_graph():
-    with tf.gfile.GFile("chessbot.pb", "rb") as f:
+    with tf.gfile.GFile("model/chessbot.pb", "rb") as f:
         graph_def = tf.GraphDef()
         graph_def.ParseFromString(f.read())
 
