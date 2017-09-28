@@ -1,0 +1,5 @@
+boto3
+msgpack-python
+numpy
+python-chess
+tensorflow

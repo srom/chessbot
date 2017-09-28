@@ -27,6 +27,8 @@ Thumbs.db
 # Python #
 ##########
 *.egg
+*.pyc
+env/
 
 # Misc #
 ########
