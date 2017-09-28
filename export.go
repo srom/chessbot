@@ -1,4 +1,4 @@
-package main
+package chess
 
 import (
 	"compress/gzip"
@@ -15,6 +15,7 @@ import (
 )
 
 const BATCH_SIZE = 1e6
+const CHAN_BUFFER = 1e4
 const BUCKET_NAME = "chessbot"
 const KEY_FORMAT = "input/%v.msgp.gz"
 
