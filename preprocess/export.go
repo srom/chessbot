@@ -1,4 +1,4 @@
-package chess
+package preprocess
 
 import (
 	"compress/gzip"

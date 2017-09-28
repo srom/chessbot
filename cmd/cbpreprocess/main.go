@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/srom/chess"
+	"github.com/srom/chess/preprocess"
 )
 
 const NUM_PARSERS = 4
@@ -16,15 +16,15 @@ func main() {
 		Region: aws.String("eu-west-1"),
 	}))
 
-	featureChannels := []<-chan *chess.BoardFeaturesAndResult{}
+	featureChannels := []<-chan *preprocess.BoardFeaturesAndResult{}
 
-	urls := chess.YieldSourceURLs(done)
+	urls := preprocess.YieldSourceURLs(done)
 	for i := 0; i < NUM_PARSERS; i++ {
 		featureChannels = append(
 			featureChannels,
-			chess.YieldBoardFeaturesAndResult(urls, done),
+			preprocess.YieldBoardFeaturesAndResult(urls, done),
 		)
 	}
 
-	chess.ExportFeaturesToS3(sess, done, featureChannels...)
+	preprocess.ExportFeaturesToS3(sess, done, featureChannels...)
 }
