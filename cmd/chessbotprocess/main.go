@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/srom/chess/preprocess"
+	"github.com/srom/chessbot/preprocess"
 )
 
 const NUM_PARSERS = 4

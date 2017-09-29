@@ -13,12 +13,12 @@ type Model struct {
 	y       tf.Output
 }
 
-func (m *Model) Evaluate(input [][768]int32) ([]*tf.Tensor, error) {
+func (m *Model) Evaluate(input BoardInput) (int64, error) {
 	inputTensor, err := tf.NewTensor(input)
 	if err != nil {
-		[]*tf.Tensor{}, err
+		return 255, err
 	}
-	output, err := m.session.Run(
+	tensors, err := m.session.Run(
 		map[tf.Output]*tf.Tensor{
 		    m.x: inputTensor,
 		},
@@ -26,8 +26,9 @@ func (m *Model) Evaluate(input [][768]int32) ([]*tf.Tensor, error) {
 		nil,
 	)
 	if err != nil {
-		[]*tf.Tensor{}, err
+		return 255, err
 	}
+	output := (tensors[0].Value().([]int64))[0]
 	return output, nil
 }
 
