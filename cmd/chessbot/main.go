@@ -25,7 +25,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error evaluation model: %v", err)
 		}
-		log.Printf("%v: %v", move, class)
 		fmt.Print(game.Position().Board().Draw())
+		log.Printf("%v: %v", move, class)
 	}
 }
