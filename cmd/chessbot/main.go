@@ -25,7 +25,7 @@ func main() {
 
 	game := chess.NewGame()
 
-	player := int64(-11)
+	player := int64(-1)
 	moveUnit := 0
 	for game.Outcome() == chess.NoOutcome {
 		moveUnit += 1
