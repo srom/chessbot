@@ -25,12 +25,12 @@ func main() {
 
 	game := chess.NewGame()
 
-	player := int64(1)
+	player := int64(-11)
 	moveUnit := 0
 	for game.Outcome() == chess.NoOutcome {
 		moveUnit += 1
 		start := time.Now()
-		//player = -1 * player
+		player = -1 * player
 		moveNodes, _ := play.Negamax(model, game, DEPTH, -1 * play.MAX_SCORE, play.MAX_SCORE, player)
 		randomMoveNode := play.PickRandomMove(moveNodes)
 		game.Move(randomMoveNode.Move)
