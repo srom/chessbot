@@ -1,6 +1,7 @@
 package play
 
 import (
+	"fmt"
 	"io/ioutil"
 
 	tf "github.com/tensorflow/tensorflow/tensorflow/go"
@@ -29,7 +30,16 @@ func (m *Model) Evaluate(input BoardInput) (int64, error) {
 		return 255, err
 	}
 	output := (tensors[0].Value().([]int64))[0]
-	return output, nil
+
+	if output == 0 {
+		return -1, nil
+	} else if output == 1 {
+		return 0, nil
+	} else if output == 2 {
+		return 1, nil
+	} else {
+		return 255, fmt.Errorf("Unknown class %v", output)
+	}
 }
 
 func (m *Model) Close() error {
