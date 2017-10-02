@@ -7,12 +7,18 @@ import (
 
 	"github.com/notnil/chess"
 	"github.com/srom/chessbot/play"
+	"path/filepath"
 )
 
 const DEPTH = 5
 
 func main() {
-	model, err := play.LoadModel("/Users/srom/workspace/go/src/github.com/srom/chessbot/model/chessbot.pb")
+	modelPath, err := filepath.Abs("../../model/chessbot.pb")
+	if err != nil {
+		log.Fatalf("Error reading path: %v", err)
+	}
+
+	model, err := play.LoadModel(modelPath)
 	if err != nil {
 		log.Fatalf("Error parsing model: %v", err)
 	}
