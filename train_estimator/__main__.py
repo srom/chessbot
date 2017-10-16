@@ -32,7 +32,7 @@ def main():
         loss = estimator.compute_loss(session, X_p_test, X_o_test, X_r_test)
         print "Loss: {}".format(loss)
 
-        instance = estimator.evaluate(np.random.random_sample((1, INPUT_DIMENSION)))
+        instance = estimator.evaluate(session, np.random.random_sample((1, INPUT_DIMENSION)))
 
         print 'Instance: {}'.format(instance)
 
