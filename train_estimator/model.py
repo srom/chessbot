@@ -18,7 +18,7 @@ class ChessDNNEstimator(object):
         self.X_observed = tf.placeholder(tf.float32, shape=(None, INPUT_DIMENSION), name='X_observed')
         self.X_random = tf.placeholder(tf.float32, shape=(None, INPUT_DIMENSION), name='X_random')
 
-        with tf.variable_scope("evaluation_function_scope"):
+        with tf.variable_scope("evaluation_function"):
             self.f = self._get_evaluation_function(self.X)
             tf.get_variable_scope().reuse_variables()
             self.f_parent = self._get_evaluation_function(self.X_parent)
@@ -50,17 +50,16 @@ class ChessDNNEstimator(object):
             output = tf.layers.dense(hidden_2, 1, activation=None, name='output')
             return output
 
-
     def _get_loss(self):
         with tf.name_scope('loss'):
             x_observed_random = self.f_observed - self.f_random
             x_parent_observed = KAPPA * (self.f_parent + self.f_observed)
 
-            loss_a = -tf.log(tf.sigmoid(x_observed_random))
-            loss_b = -tf.log(tf.sigmoid(x_parent_observed))
-            loss_c = -tf.log(tf.sigmoid(-x_parent_observed))
+            loss_a = tf.reduce_mean(tf.sigmoid(x_observed_random))
+            loss_b = tf.reduce_mean(tf.sigmoid(x_parent_observed))
+            loss_c = tf.reduce_mean(tf.sigmoid(-x_parent_observed))
 
-            return tf.reduce_mean(loss_a + loss_b + loss_c, name='loss')
+            return tf.add_n([loss_a, loss_b, loss_c], name='loss')
 
     def _get_training_op(self):
         with tf.name_scope('train'):
