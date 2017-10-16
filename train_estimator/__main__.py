@@ -29,12 +29,10 @@ def main():
 
         estimator.train(session, X_p_train, X_o_train, X_r_train)
 
-        loss = estimator.evaluate(session, X_p_test, X_o_test, X_r_test)
+        loss = estimator.compute_loss(session, X_p_test, X_o_test, X_r_test)
         print "Loss: {}".format(loss)
 
-        instance = session.run(estimator.f, feed_dict={
-            estimator.X: np.random.random_sample((1, INPUT_DIMENSION))
-        })
+        instance = estimator.evaluate(np.random.random_sample((1, INPUT_DIMENSION)))
 
         print 'Instance: {}'.format(instance)
 
