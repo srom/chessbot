@@ -61,11 +61,11 @@ class ChessDNNEstimator(object):
         x_observed_random = self.f_observed - self.f_random
         x_parent_observed = KAPPA * (self.f_parent + self.f_observed)
 
-        loss_a = tf.reduce_mean(-tf.log(1 + tf.sigmoid(x_observed_random)))
-        loss_b = tf.reduce_mean(-tf.log(1 + tf.sigmoid(x_parent_observed)))
-        loss_c = tf.reduce_mean(-tf.log(1 + tf.sigmoid(-x_parent_observed)))
+        loss_a = tf.log(1 + tf.sigmoid(x_observed_random))
+        loss_b = tf.log(1 + tf.sigmoid(x_parent_observed))
+        loss_c = tf.log(1 + tf.sigmoid(-x_parent_observed))
 
-        return tf.add_n([loss_a, loss_b, loss_c], name='loss')
+        return tf.reduce_mean(loss_a + loss_b + loss_c, name='loss')
 
     def _get_training_op(self):
         with tf.name_scope('train'):
