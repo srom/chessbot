@@ -5,7 +5,7 @@ import tensorflow as tf
 
 INPUT_DIMENSION = 8*8*12  # 768 = 8 x 8 squares x 12 piece types
 HIDDEN_UNITS = 2048
-KAPPA = 10.0  # Gives emphasize to f(p) = -f(q)
+KAPPA = 10.0  # Emphasizes f(p) = -f(q)
 LEARNING_RATE = 0.03
 MOMENTUM = 0.9
 
@@ -32,7 +32,6 @@ class ChessDNNEstimator(object):
             self.training_op = self._get_training_op()
 
     def train(self, session, X_parent, X_observed, X_random):
-        # TODO: add mini batch
         session.run(self.training_op, feed_dict={
             self.X_parent: X_parent,
             self.X_observed: X_observed,
@@ -59,11 +58,11 @@ class ChessDNNEstimator(object):
 
     def _get_loss(self):
         x_observed_random = self.f_observed - self.f_random
-        x_parent_observed = KAPPA * (self.f_parent + self.f_observed)
+        x_parent_observed = self.f_parent + self.f_observed
 
         loss_a = tf.log(1 + tf.sigmoid(x_observed_random))
-        loss_b = tf.log(1 + tf.sigmoid(x_parent_observed))
-        loss_c = tf.log(1 + tf.sigmoid(-x_parent_observed))
+        loss_b = KAPPA * tf.log(1 + tf.sigmoid(x_parent_observed))
+        loss_c = KAPPA * tf.log(1 + tf.sigmoid(-x_parent_observed))
 
         return tf.reduce_mean(loss_a + loss_b + loss_c, name='loss')
 
