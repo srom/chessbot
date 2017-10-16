@@ -67,6 +67,5 @@ class ChessDNNEstimator(object):
         return tf.reduce_mean(loss_a + loss_b + loss_c, name='loss')
 
     def _get_training_op(self):
-        with tf.name_scope('train'):
-            optimizer = tf.train.MomentumOptimizer(learning_rate=LEARNING_RATE, momentum=MOMENTUM)
-            return optimizer.minimize(self.loss)
+        optimizer = tf.train.MomentumOptimizer(learning_rate=LEARNING_RATE, momentum=MOMENTUM)
+        return optimizer.minimize(self.loss)
