@@ -29,5 +29,5 @@ func main() {
 		)
 	}
 
-	fetch.FetchData(sess, featureChannels...)
+	fetch.FetchData(sess, done, featureChannels...)
 }

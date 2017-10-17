@@ -18,7 +18,7 @@ const BATCH_SIZE = 1e3
 const BUCKET_NAME = "chessbot"
 const KEY_FORMAT = "triplets/%v.pb.gz"
 
-func FetchData(awsSession *session.Session, featureChannels ...<-chan *ChessBotTriplet) {
+func FetchData(awsSession *session.Session, done <-chan struct{}, featureChannels ...<-chan *ChessBotTriplet) {
 	start := time.Now()
 	loopStart := time.Now()
 	iteration := 0
@@ -30,7 +30,12 @@ func FetchData(awsSession *session.Session, featureChannels ...<-chan *ChessBotT
 	output := func(c <-chan *ChessBotTriplet) {
 		defer wgOutChan.Done()
 		for feature := range c {
-			out <- feature
+			select {
+			case <-done:
+				return
+			default:
+				out <- feature
+			}
 		}
 	}
 
@@ -75,7 +80,13 @@ func flushToS3(sess *session.Session, triplets *ChessBotTriplets) {
 			w.Close()
 		}()
 
-		proto.MarshalText(gz, triplets)
+		data, err := proto.Marshal(triplets)
+		if err != nil {
+			fmt.Printf("Error marshaling triplets: %v", err)
+			return
+		}
+
+		gz.Write(data)
 
 	}(triplets)
 
