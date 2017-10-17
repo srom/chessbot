@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/srom/chessbot/common"
 	"github.com/srom/chessbot/estimator/fetch"
@@ -16,7 +15,7 @@ func main() {
 
 	sess := session.Must(session.NewSession(&aws.Config{
 		Region:      aws.String("eu-west-1"),
-		Credentials: credentials.NewSharedCredentials("", "default"),
+		//Credentials: credentials.NewSharedCredentials("", "default"),
 	}))
 
 	featureChannels := []<-chan *fetch.ChessBotTriplet{}
