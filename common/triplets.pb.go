@@ -12,7 +12,7 @@ It has these top-level messages:
 	ChessBotTriplet
 	BoardBits
 */
-package fetch
+package common
 
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"

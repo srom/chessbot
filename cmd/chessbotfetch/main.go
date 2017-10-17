@@ -18,7 +18,7 @@ func main() {
 		//Credentials: credentials.NewSharedCredentials("", "default"),
 	}))
 
-	featureChannels := []<-chan *fetch.ChessBotTriplet{}
+	featureChannels := []<-chan *common.ChessBotTriplet{}
 
 	urls := common.YieldSourceURLs(done)
 	for i := 0; i < NUM_PARSERS; i++ {

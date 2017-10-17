@@ -15,8 +15,8 @@ import (
 const DIMENSION = 768 // 8 * 8 squares * 12 piece types
 const CHAN_BUFFER = 1e4
 
-func YieldTriplets(urls <-chan string) <-chan *ChessBotTriplet {
-	features := make(chan *ChessBotTriplet, CHAN_BUFFER)
+func YieldTriplets(urls <-chan string) <-chan *common.ChessBotTriplet {
+	features := make(chan *common.ChessBotTriplet, CHAN_BUFFER)
 	go func() {
 		defer close(features)
 		for url := range urls {
@@ -43,9 +43,9 @@ func YieldTriplets(urls <-chan string) <-chan *ChessBotTriplet {
 	return features
 }
 
-func parseGame(game *pgn.Game, features chan *ChessBotTriplet) {
+func parseGame(game *pgn.Game, features chan *common.ChessBotTriplet) {
 	board := pgn.NewBoard()
-	var parent *BoardBits
+	var parent *common.BoardBits
 	for i, move := range game.Moves {
 		if i == 0 {
 			parent = getBoardBits(board)
@@ -68,7 +68,7 @@ func parseGame(game *pgn.Game, features chan *ChessBotTriplet) {
 	}
 }
 
-func getBoardBits(board *pgn.Board) *BoardBits {
+func getBoardBits(board *pgn.Board) *common.BoardBits {
 	pieces := make([]uint32, 0, DIMENSION)
 	for _, piece := range common.PIECES {
 		for _, position := range common.POSITIONS {
@@ -79,13 +79,13 @@ func getBoardBits(board *pgn.Board) *BoardBits {
 			}
 		}
 	}
-	return &BoardBits{
+	return &common.BoardBits{
 		Pieces: pieces,
 	}
 }
 
-func getTriplet(parent, observed, random *BoardBits) *ChessBotTriplet {
-	return &ChessBotTriplet{
+func getTriplet(parent, observed, random *common.BoardBits) *common.ChessBotTriplet {
+	return &common.ChessBotTriplet{
 		Parent:   parent,
 		Observed: observed,
 		Random:   random,

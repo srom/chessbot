@@ -12,22 +12,23 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/golang/protobuf/proto"
+	"github.com/srom/chessbot/common"
 )
 
 const BATCH_SIZE = 1e5
 const BUCKET_NAME = "chessbot"
 const KEY_FORMAT = "triplets/%v.pb.gz"
 
-func FetchData(awsSession *session.Session, done <-chan struct{}, featureChannels ...<-chan *ChessBotTriplet) {
+func FetchData(awsSession *session.Session, done <-chan struct{}, featureChannels ...<-chan *common.ChessBotTriplet) {
 	start := time.Now()
 	loopStart := time.Now()
 	iteration := 0
 	var wgOutChan sync.WaitGroup
 
-	out := make(chan *ChessBotTriplet, CHAN_BUFFER)
+	out := make(chan *common.ChessBotTriplet, CHAN_BUFFER)
 	defer close(out)
 
-	output := func(c <-chan *ChessBotTriplet) {
+	output := func(c <-chan *common.ChessBotTriplet) {
 		defer wgOutChan.Done()
 		for feature := range c {
 			select {
@@ -48,7 +49,7 @@ func FetchData(awsSession *session.Session, done <-chan struct{}, featureChannel
 		close(out)
 	}()
 
-	triplets := &ChessBotTriplets{}
+	triplets := &common.ChessBotTriplets{}
 
 	for triplet := range out {
 		iteration += 1
@@ -58,7 +59,7 @@ func FetchData(awsSession *session.Session, done <-chan struct{}, featureChannel
 			flushToS3(awsSession, triplets)
 			log.Printf("%v: Elapsed %v; Batch %v", iteration, time.Since(start), time.Since(loopStart))
 			loopStart = time.Now()
-			triplets = &ChessBotTriplets{}
+			triplets = &common.ChessBotTriplets{}
 		}
 	}
 	if len(triplets.Triplets) >= BATCH_SIZE {
@@ -66,13 +67,13 @@ func FetchData(awsSession *session.Session, done <-chan struct{}, featureChannel
 	}
 }
 
-func flushToS3(sess *session.Session, triplets *ChessBotTriplets) {
+func flushToS3(sess *session.Session, triplets *common.ChessBotTriplets) {
 	r, w := io.Pipe()
 
 	uploader := s3manager.NewUploader(sess)
 	keyName := fmt.Sprintf(KEY_FORMAT, time.Now().Unix())
 
-	go func(triplets *ChessBotTriplets) {
+	go func(triplets *common.ChessBotTriplets) {
 		gz := gzip.NewWriter(w)
 
 		defer func() {
