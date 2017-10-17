@@ -14,7 +14,7 @@ import (
 	"github.com/golang/protobuf/proto"
 )
 
-const BATCH_SIZE = 1e4
+const BATCH_SIZE = 1e5
 const BUCKET_NAME = "chessbot"
 const KEY_FORMAT = "triplets/%v.pb.gz"
 
