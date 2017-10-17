@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/notnil/chess"
+	"github.com/srom/chessbot/common"
 )
 
 const MAX_SCORE int64 = 1e6
@@ -24,7 +25,7 @@ func Negamax(model *Model, game *chess.Game, depth uint8, alpha, beta int64, pla
 		wg.Add(1)
 		go func(move *chess.Move) {
 			defer wg.Done()
-			gameCopy := copyGame(game)
+			gameCopy := common.CopyGame(game)
 			err := gameCopy.Move(move)
 			if err != nil {
 				log.Fatal(err)
@@ -80,7 +81,7 @@ func negamaxSync(model *Model, game *chess.Game, depth uint8, alpha, beta int64,
 
 	bestScore := alpha
 	for _, move := range getMoves(game) {
-		gameCopy := copyGame(game)
+		gameCopy := common.CopyGame(game)
 		err := gameCopy.Move(move)
 		if err != nil {
 			log.Fatal(err)
@@ -103,19 +104,6 @@ func negamaxSync(model *Model, game *chess.Game, depth uint8, alpha, beta int64,
 	return bestScore
 }
 
-func copyGame(game *chess.Game) *chess.Game {
-	moves := game.Moves()
-	return chess.NewGame(moveGameForward(moves))
-}
-
-func moveGameForward(moves []*chess.Move) func(*chess.Game) {
-	return func(g *chess.Game) {
-		for _, move := range moves {
-			g.Move(move)
-		}
-	}
-}
-
 func isGameOver(game *chess.Game) bool {
 	return game.Outcome() != chess.NoOutcome
 }
@@ -135,7 +123,7 @@ func getMovesWithEval(model *Model, game *chess.Game, player int64) []*chess.Mov
 	goodMoves := []*chess.Move{}
 	bestScore := -MAX_SCORE
 	for _, move := range getMoves(game) {
-		gameCopy := copyGame(game)
+		gameCopy := common.CopyGame(game)
 		gameCopy.Move(move)
 		boardInput := ParseBoard(gameCopy.Position().Board())
 		score, err := model.Evaluate(boardInput)
@@ -162,7 +150,6 @@ func getMoves(game *chess.Game) []*chess.Move {
 	})
 	return moves
 }
-
 
 func moveScore(move *chess.Move) uint8 {
 	if move.HasTag(chess.Capture) {

@@ -8,43 +8,6 @@ import (
 	"gopkg.in/freeeve/pgn.v1"
 )
 
-// http://www.ficsgames.org/download.html
-var SOURCES = []string{
-	"http://www.ficsgames.org/dl/ficsgamesdb_2016_chess_nomovetimes_1495633.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2015_chess_nomovetimes_1495634.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2014_chess_nomovetimes_1495635.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2013_chess_nomovetimes_1495484.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2012_chess_nomovetimes_1495631.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2011_chess_nomovetimes_1495632.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2010_chess_nomovetimes_1495636.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2009_chess_nomovetimes_1495637.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2008_chess_nomovetimes_1495638.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2007_chess_nomovetimes_1495639.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2006_chess_nomovetimes_1495640.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2005_chess_nomovetimes_1495641.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2004_chess_nomovetimes_1495643.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2003_chess_nomovetimes_1495644.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2002_chess_nomovetimes_1495645.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2001_chess_nomovetimes_1495646.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2000_chess_nomovetimes_1495647.pgn.bz2",
-}
-
-func YieldSourceURLs(done <-chan struct{}) <-chan string {
-	out := make(chan string)
-	go func() {
-		defer close(out)
-		for _, url := range SOURCES {
-			select {
-			case <-done:
-				return
-			default:
-				out <- url
-			}
-		}
-	}()
-	return out
-}
-
 func YieldBoardFeaturesAndResult(urls <-chan string, done <-chan struct{}) <-chan *BoardFeaturesAndResult {
 	features := make(chan *BoardFeaturesAndResult, CHAN_BUFFER)
 	go func() {

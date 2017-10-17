@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+message ChessBotTriplets {
+    repeated ChessBotTriplet triplets = 1;
+}
+
+message ChessBotTriplet {
+    BoardBits parent = 1;
+    BoardBits observed = 2;
+    BoardBits random = 3;
+}
+
+message BoardBits {
+    repeated uint32 pieces = 1;
+}
