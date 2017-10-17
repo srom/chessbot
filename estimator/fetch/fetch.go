@@ -14,7 +14,7 @@ import (
 	"github.com/golang/protobuf/proto"
 )
 
-const BATCH_SIZE = 1e6
+const BATCH_SIZE = 1e4
 const BUCKET_NAME = "chessbot"
 const KEY_FORMAT = "triplets/%v.pb.gz"
 
@@ -61,7 +61,7 @@ func FetchData(awsSession *session.Session, done <-chan struct{}, featureChannel
 			triplets = &ChessBotTriplets{}
 		}
 	}
-	if len(triplets.Triplets) > 1e4 {
+	if len(triplets.Triplets) >= BATCH_SIZE {
 		flushToS3(awsSession, triplets)
 	}
 }
