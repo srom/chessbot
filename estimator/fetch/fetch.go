@@ -1,16 +1,17 @@
 package fetch
 
 import (
-	"github.com/aws/aws-sdk-go/aws/session"
-	"sync"
-	"time"
-	"log"
+	"compress/gzip"
 	"fmt"
 	"io"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"compress/gzip"
-	"github.com/golang/protobuf/proto"
+	"log"
+	"sync"
+	"time"
+
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/golang/protobuf/proto"
 )
 
 const BATCH_SIZE = 1e3

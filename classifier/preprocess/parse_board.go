@@ -3,8 +3,8 @@ package preprocess
 import (
 	"fmt"
 
-	"gopkg.in/freeeve/pgn.v1"
 	"github.com/srom/chessbot/common"
+	"gopkg.in/freeeve/pgn.v1"
 )
 
 //go:generate msgp -o=input.go -marshal=false

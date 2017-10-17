@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/notnil/chess"
 	"github.com/srom/chessbot/common"
 	"gopkg.in/freeeve/pgn.v1"
-	"github.com/notnil/chess"
 )
 
 const DIMENSION = 768 // 8 * 8 squares * 12 piece types
@@ -86,9 +86,9 @@ func getBoardBits(board *pgn.Board) *BoardBits {
 
 func getTriplet(parent, observed, random *BoardBits) *ChessBotTriplet {
 	return &ChessBotTriplet{
-		Parent: parent,
+		Parent:   parent,
 		Observed: observed,
-		Random: random,
+		Random:   random,
 	}
 }
 
