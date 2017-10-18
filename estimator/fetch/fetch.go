@@ -8,6 +8,9 @@ import (
 	"sync"
 	"time"
 
+	"bufio"
+	"encoding/binary"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
@@ -49,45 +52,49 @@ func FetchData(awsSession *session.Session, done <-chan struct{}, featureChannel
 		close(out)
 	}()
 
-	triplets := &common.ChessBotTriplets{}
+	triplets := []*common.ChessBotTriplet{}
 
 	for triplet := range out {
 		iteration += 1
-		triplets.Triplets = append(triplets.Triplets, triplet)
+		triplets = append(triplets, triplet)
 
-		if len(triplets.Triplets) == BATCH_SIZE {
+		if len(triplets) == BATCH_SIZE {
 			flushToS3(awsSession, triplets)
 			log.Printf("%v: Elapsed %v; Batch %v", iteration, time.Since(start), time.Since(loopStart))
 			loopStart = time.Now()
-			triplets = &common.ChessBotTriplets{}
+			triplets = []*common.ChessBotTriplet{}
 		}
 	}
-	if len(triplets.Triplets) >= BATCH_SIZE {
+	if len(triplets) >= BATCH_SIZE {
 		flushToS3(awsSession, triplets)
 	}
 }
 
-func flushToS3(sess *session.Session, triplets *common.ChessBotTriplets) {
+func flushToS3(sess *session.Session, triplets []*common.ChessBotTriplet) {
 	r, w := io.Pipe()
 
 	uploader := s3manager.NewUploader(sess)
 	keyName := fmt.Sprintf(KEY_FORMAT, time.Now().Unix())
 
-	go func(triplets *common.ChessBotTriplets) {
+	go func(triplets []*common.ChessBotTriplet) {
 		gz := gzip.NewWriter(w)
+		tripletWriter := bufio.NewWriter(gz)
 
 		defer func() {
 			gz.Close()
 			w.Close()
 		}()
 
-		data, err := proto.Marshal(triplets)
-		if err != nil {
-			fmt.Printf("Error marshaling triplets: %v", err)
-			return
+		for _, triplet := range triplets {
+			data, err := proto.Marshal(triplet)
+			delimiter := make([]byte, 4)
+			binary.LittleEndian.PutUint32(delimiter, uint32(len(data)))
+			if err != nil {
+				fmt.Printf("Error marshaling triplets: %v", err)
+				return
+			}
+			tripletWriter.Write(append(delimiter, data...))
 		}
-
-		gz.Write(data)
 
 	}(triplets)
 
