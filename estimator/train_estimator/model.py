@@ -6,7 +6,7 @@ import tensorflow as tf
 INPUT_DIMENSION = 8*8*12  # 768 = 8 x 8 squares x 12 piece types
 HIDDEN_UNITS = 2048
 KAPPA = 1.0  # Emphasizes f(p) = -f(q)
-LEARNING_RATE = 0.9
+LEARNING_RATE = 0.03
 MOMENTUM = 0.9
 
 

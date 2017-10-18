@@ -8,7 +8,7 @@ import numpy as np
 from common.triplets_pb2 import ChessBotTriplet
 
 
-BATCH_SIZE = 1e2
+BATCH_SIZE = 1e3
 TRAIN_RATIO = 0.8
 
 logger = logging.getLogger(__name__)
@@ -21,7 +21,6 @@ def yield_batch(size=BATCH_SIZE):
         triplets.append(triplet)
         if len(triplets) == size:
             triplet_inputs = get_triplet_inputs(triplets)
-            logger.info('Yielding batch of size %d', size)
             yield get_train_and_test_inputs(triplet_inputs)
             triplets = []
 
