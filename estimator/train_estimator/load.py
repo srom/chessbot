@@ -8,12 +8,13 @@ import numpy as np
 from common.triplets_pb2 import ChessBotTriplet
 
 
+BATCH_SIZE = 1e2
 TRAIN_RATIO = 0.8
 
 logger = logging.getLogger(__name__)
 
 
-def yield_batch(size=1e2):
+def yield_batch(size=BATCH_SIZE):
     triplets = []
     logger.info('Loading batch')
     for triplet in yield_triplets():
@@ -38,14 +39,14 @@ def get_triplet_inputs(triplets):
 
 def get_train_and_test_inputs(triplets):
     l = len(triplets)
-    index = int(TRAIN_RATIO * l)
+    index = int(TRAIN_RATIO * l) - 1
     np.random.shuffle(triplets)
     return triplets[:index+1], triplets[index+1:]
 
 
 def yield_triplets():
     # TODO: load from S3
-    with open('/Users/srom/Downloads/1508288318.pb', 'rb') as f:
+    with open('/Users/srom/Downloads/1508291796.pb', 'rb') as f:
         while True:
             sizeBytes = f.read(4)
             if not sizeBytes or len(sizeBytes) < 4:

@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import argparse
 import logging
+import time
 
 import tensorflow as tf
 
@@ -14,23 +15,30 @@ logger = logging.getLogger(__name__)
 
 
 def main():
+    start = time.time()
     estimator = ChessDNNEstimator()
 
     with tf.Session() as session:
         session.run(tf.global_variables_initializer())
 
         iteration = 0
+        best_loss = float('inf')
+        best_iteration = 0
         for X_train, X_test in yield_batch():
             iteration += 1
             X_p_train, X_o_train, X_r_train = X_train[:, 0, :], X_train[:, 1, :], X_train[:, 2, :]
             X_p_test, X_o_test, X_r_test = X_test[:, 0, :], X_test[:, 1, :], X_test[:, 2, :]
 
-            logger.info('Training batch %d', iteration)
-
             estimator.train(session, X_p_train, X_o_train, X_r_train)
+            loss_test = estimator.compute_loss(session, X_p_test, X_o_test, X_r_test)
 
-            loss = estimator.compute_loss(session, X_p_test, X_o_test, X_r_test)
-            print "Loss: {}".format(loss)
+            if loss_test < best_loss:
+                best_loss = loss_test
+                best_iteration = iteration
+
+            elapsed = int(time.time() - start)
+            logger.info('Training batch %d; Elapsed %ds; loss: %f; best: %f (%d)',
+                        iteration, elapsed, loss_test, best_loss, best_iteration)
 
     logger.info('DONE')
 

@@ -3,3 +3,7 @@ msgpack-python
 numpy
 python-chess
 tensorflow
+protobuf==3.4.0
+
+nose
+rednose
