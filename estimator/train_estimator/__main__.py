@@ -22,8 +22,8 @@ def main():
         iteration = 0
         for X_train, X_test in yield_batch():
             iteration += 1
-            X_p_train, X_o_train, X_r_train = X_train[0,:], X_train[1,:], X_train[2,:]
-            X_p_test, X_o_test, X_r_test = X_test[0,:], X_test[1,:], X_test[2,:]
+            X_p_train, X_o_train, X_r_train = X_train[:, 0, :], X_train[:, 1, :], X_train[:, 2, :]
+            X_p_test, X_o_test, X_r_test = X_test[:, 0, :], X_test[:, 1, :], X_test[:, 2, :]
 
             logger.info('Training batch %d', iteration)
 

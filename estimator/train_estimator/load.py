@@ -1,10 +1,11 @@
 from __future__ import unicode_literals
 
 import logging
+import struct
 
 import numpy as np
 
-from common.triplets_pb2 import ChessBotTriplets
+from common.triplets_pb2 import ChessBotTriplet
 
 
 TRAIN_RATIO = 0.8
@@ -17,7 +18,6 @@ def yield_batch(size=1e2):
     logger.info('Loading batch')
     for triplet in yield_triplets():
         triplets.append(triplet)
-        logger.info('%d', len(triplets))
         if len(triplets) == size:
             triplet_inputs = get_triplet_inputs(triplets)
             logger.info('Yielding batch of size %d', size)
@@ -26,14 +26,14 @@ def yield_batch(size=1e2):
 
 
 def get_triplet_inputs(triplets):
-    triplet_inputs = []
+    items = []
     for triplet in triplets:
-        triplet_inputs.append(np.array([
+        items.append([
             triplet.parent.pieces,
             triplet.observed.pieces,
             triplet.random.pieces,
-        ], dtype=np.float32))
-    return np.array(triplet_inputs, dtype=np.float32)
+        ])
+    return np.array(items, dtype=np.float32)
 
 
 def get_train_and_test_inputs(triplets):
@@ -45,11 +45,21 @@ def get_train_and_test_inputs(triplets):
 
 def yield_triplets():
     # TODO: load from S3
-    logger.info('Yield triplets')
-    with open('/Users/srom/Downloads/1508281722.pb', 'rb') as f:
-        triplets = ChessBotTriplets()
-        triplets.ParseFromString(f.read())
-        logger.info('hello?')
+    with open('/Users/srom/Downloads/1508288318.pb', 'rb') as f:
+        while True:
+            sizeBytes = f.read(4)
+            if not sizeBytes or len(sizeBytes) < 4:
+                break
 
-    for triplet in triplets.triplets:
-        yield triplet
+            next_message_size = struct.unpack("I", sizeBytes)[0]
+
+            message_bytes = f.read(next_message_size)
+
+            if len(message_bytes) < next_message_size:
+                logger.error('Truncated message: expected len %d but got %d', next_message_size, len(message_bytes))
+                break
+
+            triplet = ChessBotTriplet()
+            triplet.ParseFromString(message_bytes)
+
+            yield triplet
