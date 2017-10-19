@@ -40,8 +40,8 @@ def main(model_dir):
             X_p_test, X_o_test, X_r_test = X_test[:, 0, :], X_test[:, 1, :], X_test[:, 2, :]
 
             estimator.train(session, X_p_train, X_o_train, X_r_train)
-            loss_test = estimator.compute_loss(session, X_p_train, X_o_train, X_r_train)
-            loss_rain = estimator.compute_loss(session, X_p_test, X_o_test, X_r_test)
+            loss_test = estimator.compute_loss(session, X_p_test, X_o_test, X_r_test)
+            loss_train = estimator.compute_loss(session, X_p_train, X_o_train, X_r_train)
 
             if loss_test < best_loss:
                 best_loss = loss_test
@@ -50,7 +50,7 @@ def main(model_dir):
 
             elapsed = int(time.time() - start)
             logger.info('Training batch %d; Elapsed %ds; loss: %f (train: %f); best: %f (%d)',
-                        iteration, elapsed, loss_test, loss_rain, best_loss, best_iteration)
+                        iteration, elapsed, loss_test, loss_train, best_loss, best_iteration)
 
             if iteration % ITERATIONS_BETWEEN_EXPORTS == 0:
                 export_model(session, model_dir)
