@@ -18,6 +18,7 @@ def main():
     start = time.time()
     estimator = ChessDNNEstimator()
 
+    saver = tf.train.Saver()
     with tf.Session() as session:
         session.run(tf.global_variables_initializer())
 
@@ -36,6 +37,7 @@ def main():
             if loss_test < best_loss:
                 best_loss = loss_test
                 best_iteration = iteration
+                saver.save(session, 'checkpoints/chessbot', global_step=iteration)
 
             elapsed = int(time.time() - start)
             logger.info('Training batch %d; Elapsed %ds; loss: %f (%f); best: %f (%d)',

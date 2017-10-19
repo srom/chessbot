@@ -37,3 +37,5 @@ env/
 .idea
 # Sublime text project files
 *.sublime-workspace
+
+checkpoints/
