@@ -3,11 +3,13 @@ from __future__ import unicode_literals
 import tensorflow as tf
 
 
-INPUT_DIMENSION = 8*8*12  # 768 = 8 x 8 squares x 12 piece types
+INPUT_DIMENSION = 768  # 8 x 8 squares x 12 piece types
 HIDDEN_UNITS = 2048
 KAPPA = 1.0  # Emphasizes f(p) = -f(q)
-LEARNING_RATE = 0.03
+INITIAL_LEARNING_RATE = 0.1
 MOMENTUM = 0.9
+DECAY_STEPS = 1e4
+DECAY_RATE = 0.1
 
 
 class ChessDNNEstimator(object):
@@ -67,5 +69,7 @@ class ChessDNNEstimator(object):
         return tf.reduce_mean(loss_a + loss_b + loss_c, name='loss')
 
     def _get_training_op(self):
-        optimizer = tf.train.MomentumOptimizer(learning_rate=LEARNING_RATE, momentum=MOMENTUM)
-        return optimizer.minimize(self.loss)
+        global_step = tf.Variable(0, trainable=False, name='global_step')
+        learning_rate = tf.train.exponential_decay(INITIAL_LEARNING_RATE, global_step, DECAY_STEPS, DECAY_RATE)
+        optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate, momentum=MOMENTUM)
+        return optimizer.minimize(self.loss, global_step=global_step)
