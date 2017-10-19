@@ -15,12 +15,13 @@ DECAY_RATE = 0.5
 class ChessDNNEstimator(object):
 
     def __init__(self):
-        self.X = tf.placeholder(tf.float32, shape=(None, INPUT_DIMENSION), name='X')
-        self.X_parent = tf.placeholder(tf.float32, shape=(None, INPUT_DIMENSION), name='X_parent')
-        self.X_observed = tf.placeholder(tf.float32, shape=(None, INPUT_DIMENSION), name='X_observed')
-        self.X_random = tf.placeholder(tf.float32, shape=(None, INPUT_DIMENSION), name='X_random')
+        with tf.variable_scope("input"):
+            self.X = tf.placeholder(tf.float32, shape=(None, INPUT_DIMENSION), name='X')
+            self.X_parent = tf.placeholder(tf.float32, shape=(None, INPUT_DIMENSION), name='X_parent')
+            self.X_observed = tf.placeholder(tf.float32, shape=(None, INPUT_DIMENSION), name='X_observed')
+            self.X_random = tf.placeholder(tf.float32, shape=(None, INPUT_DIMENSION), name='X_random')
 
-        with tf.variable_scope("dnn"):
+        with tf.variable_scope("f_p"):
             self.f = self._get_evaluation_function(self.X)
             tf.get_variable_scope().reuse_variables()
             self.f_parent = self._get_evaluation_function(self.X_parent)
