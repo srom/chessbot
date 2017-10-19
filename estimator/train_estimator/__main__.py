@@ -12,6 +12,8 @@ from .load import yield_batch
 from .model import ChessDNNEstimator
 
 
+BATCH_SIZE = 1e3
+TRAIN_TEST_RATIO = 0.8
 ITERATIONS_BETWEEN_EXPORTS = 10
 
 
@@ -32,7 +34,7 @@ def main(model_dir):
         iteration = 0
         best_loss = float('inf')
         best_iteration = 0
-        for X_train, X_test in yield_batch():
+        for X_train, X_test in yield_batch(BATCH_SIZE, TRAIN_TEST_RATIO):
             iteration += 1
             X_p_train, X_o_train, X_r_train = X_train[:, 0, :], X_train[:, 1, :], X_train[:, 2, :]
             X_p_test, X_o_test, X_r_test = X_test[:, 0, :], X_test[:, 1, :], X_test[:, 2, :]
@@ -47,7 +49,7 @@ def main(model_dir):
                 saver.save(session, save_path, global_step=iteration)
 
             elapsed = int(time.time() - start)
-            logger.info('Training batch %d; Elapsed %ds; loss: %f (%f); best: %f (%d)',
+            logger.info('Training batch %d; Elapsed %ds; loss: %f (train: %f); best: %f (%d)',
                         iteration, elapsed, loss_test, loss_rain, best_loss, best_iteration)
 
             if iteration % ITERATIONS_BETWEEN_EXPORTS == 0:

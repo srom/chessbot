@@ -8,20 +8,17 @@ import numpy as np
 from common.triplets_pb2 import ChessBotTriplet
 
 
-BATCH_SIZE = 1e3
-TRAIN_RATIO = 0.8
-
 logger = logging.getLogger(__name__)
 
 
-def yield_batch(size=BATCH_SIZE):
+def yield_batch(batch_size, train_test_ratio):
     triplets = []
     logger.info('Loading batch')
     for triplet in yield_triplets():
         triplets.append(triplet)
-        if len(triplets) == size:
+        if len(triplets) == batch_size:
             triplet_inputs = get_triplet_inputs(triplets)
-            yield get_train_and_test_inputs(triplet_inputs)
+            yield get_train_and_test_inputs(triplet_inputs, train_test_ratio)
             triplets = []
 
 
@@ -36,9 +33,9 @@ def get_triplet_inputs(triplets):
     return np.array(items, dtype=np.float32)
 
 
-def get_train_and_test_inputs(triplets):
+def get_train_and_test_inputs(triplets, train_test_ratio):
     l = len(triplets)
-    index = int(TRAIN_RATIO * l) - 1
+    index = int(train_test_ratio * l) - 1
     np.random.shuffle(triplets)
     return triplets[:index+1], triplets[index+1:]
 
