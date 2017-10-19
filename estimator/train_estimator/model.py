@@ -8,8 +8,8 @@ HIDDEN_UNITS = 2048
 KAPPA = 1.0  # Emphasizes f(p) = -f(q)
 INITIAL_LEARNING_RATE = 0.1
 MOMENTUM = 0.9
-DECAY_STEPS = 1e4
-DECAY_RATE = 0.1
+DECAY_STEPS = 2e3
+DECAY_RATE = 0.5
 
 
 class ChessDNNEstimator(object):
