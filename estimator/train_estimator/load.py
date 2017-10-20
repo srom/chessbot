@@ -1,8 +1,11 @@
 from __future__ import unicode_literals
 
+import gzip
+import io
 import logging
 import struct
 
+import boto3
 import numpy as np
 
 from common.triplets_pb2 import ChessBotTriplet
@@ -41,8 +44,7 @@ def get_train_and_test_inputs(triplets, train_test_ratio):
 
 
 def yield_triplets():
-    # TODO: load from S3
-    with open('/Users/srom/Downloads/1508291796.pb', 'rb') as f:
+    for f in yield_triplet_files_from_s3():
         while True:
             sizeBytes = f.read(4)
             if not sizeBytes or len(sizeBytes) < 4:
@@ -60,3 +62,19 @@ def yield_triplets():
             triplet.ParseFromString(message_bytes)
 
             yield triplet
+
+
+def yield_triplet_files_from_s3():
+    s3 = boto3.resource('s3', region_name='eu-west-1')
+    bucket = s3.Bucket('chessbot')
+
+    object_summary_items = list(bucket.objects.filter(Prefix='triplets'))
+
+    logger.info('Triplet files found: %d', len(object_summary_items))
+
+    for index, object_summary in enumerate(object_summary_items):
+        logger.info("Processing triplet file %d: %s", index + 1, object_summary.key)
+        object = object_summary.get()
+        with io.BytesIO(object['Body'].read()) as bytestream:
+            with gzip.GzipFile(fileobj=bytestream, mode='rb') as f:
+                yield f
