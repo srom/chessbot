@@ -8,7 +8,7 @@ from tensorflow.python.framework import graph_util
 
 
 BUCKET_NAME = 'chessbot'
-OUTPUT_KEY_NAME = 'estimator/chessbot.pb.gz'
+OUTPUT_KEY_NAME = 'estimator/chessbot.pb'
 
 
 logger = logging.getLogger(__name__)
