@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import logging
 
 import boto3
+import tensorflow as tf
 from tensorflow.python.framework import graph_util
 
 
@@ -13,18 +14,23 @@ OUTPUT_KEY_NAME = 'estimator/chessbot.pb.gz'
 logger = logging.getLogger(__name__)
 
 
-def export_model(session, model_dir):
+def export_model(saver, model_dir):
     logger.info('Exporting model')
 
-    output_node_names = ['f_p/output/BiasAdd']
+    checkpoint_path = tf.train.latest_checkpoint(model_dir)
 
-    output_graph_def = graph_util.convert_variables_to_constants(
-        session,
-        session.graph.as_graph_def(),
-        output_node_names,
-    )
+    with tf.Session() as session:
+        saver.restore(session, checkpoint_path)
 
-    export_model_to_s3(output_graph_def)
+        output_node_names = ['f_p/output/BiasAdd']
+
+        output_graph_def = graph_util.convert_variables_to_constants(
+            session,
+            session.graph.as_graph_def(),
+            output_node_names,
+        )
+
+        export_model_to_s3(output_graph_def)
 
     logger.info('Export completed')
 
