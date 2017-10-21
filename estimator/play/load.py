@@ -36,6 +36,6 @@ def load_model():
         session = tf.Session(graph=graph)
 
         x = graph.get_tensor_by_name('chessbot/input/X:0')
-        f_x = dict(class_ids=graph.get_tensor_by_name('chessbot/f_p/output/BiasAdd:0'))
+        f_x = graph.get_tensor_by_name('chessbot/f_p/output/BiasAdd:0')
 
         return ChessBotModel(session, x, f_x)

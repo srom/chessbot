@@ -7,15 +7,20 @@ from .load import load_model
 
 
 def main():
-    board = chess.Board()
-
+    move_scores = []
     with load_model() as estimator:
+        board = chess.Board()
+        board.push_san('e4')
         for move in board.legal_moves:
             b = board.copy()
             b.push(move)
             x = parse_board(b)
+            move_scores.append((b, move, estimator.evaluate(x)[0][0]))
 
-            print 'Move {}: {}'.format(move, estimator.evaluate(x)['class_ids'][0][0])
+        for board, move, score in sorted(move_scores, key=lambda t: t[2]):
+            print move, score
+            print board
+            print
 
 
 if __name__ == '__main__':
