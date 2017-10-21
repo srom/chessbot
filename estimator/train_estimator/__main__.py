@@ -14,7 +14,7 @@ from .model import ChessDNNEstimator
 
 BATCH_SIZE = 1e3
 TRAIN_TEST_RATIO = 0.8
-ITERATIONS_BETWEEN_EXPORTS = 1
+ITERATIONS_BETWEEN_EXPORTS = 10
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s (%(levelname)s) %(message)s")
