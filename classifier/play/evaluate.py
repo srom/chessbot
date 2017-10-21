@@ -1,10 +1,7 @@
 from __future__ import unicode_literals
 
 import numpy as np
-import tensorflow as tf
-from tensorflow.python.estimator import model_fn as model_fn_lib
-
-from .parse import parse_board
+from common.parse_board import parse_board
 
 
 WIN = 1
