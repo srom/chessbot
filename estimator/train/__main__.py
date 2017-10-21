@@ -21,7 +21,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s (%(levelname)s) %(me
 logger = logging.getLogger(__name__)
 
 
-def main(model_dir):
+def main(model_dir, should_export):
     start = time.time()
     save_path = os.path.join(model_dir, 'chessbot')
 
@@ -53,15 +53,21 @@ def main(model_dir):
             logger.info('Training batch %d; Elapsed %ds; loss: %f (train: %f); best: %f (%d)',
                         iteration, elapsed, loss_test, loss_train, best_loss, best_iteration)
 
-            if iteration % ITERATIONS_BETWEEN_EXPORTS == 0 and best_iteration > last_exported_iteration:
+            if ready_to_export(should_export, iteration, last_exported_iteration, best_iteration):
                 export_model(saver, model_dir)
                 last_exported_iteration = best_iteration
 
     logger.info('DONE')
 
 
+def ready_to_export(should_export, iteration, last_exported_iteration, best_iteration):
+    return should_export and iteration % ITERATIONS_BETWEEN_EXPORTS == 0 and best_iteration > last_exported_iteration
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_dir', default='checkpoints')
+    parser.add_argument('--no_export', action='store_true')
     args = parser.parse_args()
-    main(args.model_dir)
+    should_export = not args.no_export
+    main(args.model_dir, should_export)
