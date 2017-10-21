@@ -1,0 +1,4 @@
+boto3
+numpy
+python-chess
+tensorflow-gpu
