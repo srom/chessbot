@@ -10,6 +10,7 @@ INITIAL_LEARNING_RATE = 0.1
 MOMENTUM = 0.9
 DECAY_STEPS = 2e3
 DECAY_RATE = 0.5
+DROPOUT_RATE = 0.5
 
 
 class ChessDNNEstimator(object):
@@ -22,6 +23,7 @@ class ChessDNNEstimator(object):
             self.X_random = tf.placeholder(tf.float32, shape=(None, INPUT_DIMENSION), name='X_random')
 
         with tf.variable_scope("f_p"):
+            self.training = tf.placeholder_with_default(False, shape=(), name='training')
             self.f = self._get_evaluation_function(self.X)
             tf.get_variable_scope().reuse_variables()
             self.f_parent = self._get_evaluation_function(self.X_parent)
@@ -39,6 +41,7 @@ class ChessDNNEstimator(object):
             self.X_parent: X_parent,
             self.X_observed: X_observed,
             self.X_random: X_random,
+            self.training: True,
         })
 
     def compute_loss(self, session, X_parent, X_observed, X_random):
@@ -54,9 +57,12 @@ class ChessDNNEstimator(object):
         })
 
     def _get_evaluation_function(self, X):
-        hidden_1 = tf.layers.dense(X, HIDDEN_UNITS, activation=tf.nn.relu, name='hidden_1')
-        hidden_2 = tf.layers.dense(hidden_1, HIDDEN_UNITS, activation=tf.nn.relu, name='hidden_2')
-        output = tf.layers.dense(hidden_2, 1, activation=None, name='output')
+        X_drop = tf.layers.dropout(X, rate=DROPOUT_RATE, training=self.training)
+        hidden_1 = tf.layers.dense(X_drop, HIDDEN_UNITS, activation=tf.nn.relu, name='hidden_1')
+        hidden_1_drop = tf.layers.dropout(hidden_1, rate=DROPOUT_RATE, training=self.training)
+        hidden_2 = tf.layers.dense(hidden_1_drop, HIDDEN_UNITS, activation=tf.nn.relu, name='hidden_2')
+        hidden_2_drop = tf.layers.dropout(hidden_2, rate=DROPOUT_RATE, training=self.training)
+        output = tf.layers.dense(hidden_2_drop, 1, activation=None, name='output')
         return output
 
     def _get_loss(self):
