@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/notnil/chess"
-	"github.com/srom/chessbot/play"
+	"github.com/srom/chessbot/classifier/play"
 )
 
 const DEPTH = 3
