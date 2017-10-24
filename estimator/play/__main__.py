@@ -12,6 +12,7 @@ def main():
         board = chess.Board()
         board.push_san('e4')
         board.push_san('e5')
+        board.push_san('Nf3')
         for move in board.legal_moves:
             b = board.copy()
             b.push(move)

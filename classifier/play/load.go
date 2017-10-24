@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/srom/chessbot/common"
 	tf "github.com/tensorflow/tensorflow/tensorflow/go"
 )
 
@@ -14,7 +15,7 @@ type Model struct {
 	y       tf.Output
 }
 
-func (m *Model) Evaluate(input BoardInput) (int64, error) {
+func (m *Model) Evaluate(input common.BoardInput) (int64, error) {
 	inputTensor, err := tf.NewTensor(input)
 	if err != nil {
 		return 255, err

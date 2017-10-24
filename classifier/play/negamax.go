@@ -25,13 +25,12 @@ func Negamax(model *Model, game *chess.Game, depth uint8, alpha, beta int64, pla
 		wg.Add(1)
 		go func(move *chess.Move) {
 			defer wg.Done()
-			gameCopy := common.CopyGame(game)
+			gameCopy, _ := common.CopyGame(game)
 			err := gameCopy.Move(move)
 			if err != nil {
 				log.Fatal(err)
 			}
 			score := negamaxSync(model, gameCopy, depth - 1, alpha, beta, player, -player)
-			//log.Printf("DECISION %s %v", move.String(), score)
 			moveResults <- MoveResult{
 				Move: move,
 				Score: score,
@@ -64,24 +63,17 @@ func negamaxSync(model *Model, game *chess.Game, depth uint8, alpha, beta int64,
 	if isGameOver(game) {
 		return player * endScore(game)
 	} else if depth <= 0 {
-		boardInput := ParseBoard(game.Position().Board())
+		boardInput := common.ParseBoard(game.Position().Board())
 		score, err := model.Evaluate(boardInput)
 		if err != nil {
 			log.Fatal(err)
 		}
-		//moves := []string{}
-		//for _, move := range game.Moves() {
-		//	 moves = append(moves, move.String())
-		//}
-		//if game.Moves()[0].String() == "d2d4" {
-		//	log.Printf("Leaf %v %v %v", player, moves, score)
-		//}
 		return player * score
 	}
 
 	bestScore := alpha
 	for _, move := range getMoves(game) {
-		gameCopy := common.CopyGame(game)
+		gameCopy, _ := common.CopyGame(game)
 		err := gameCopy.Move(move)
 		if err != nil {
 			log.Fatal(err)
@@ -123,15 +115,14 @@ func getMovesWithEval(model *Model, game *chess.Game, player int64) []*chess.Mov
 	goodMoves := []*chess.Move{}
 	bestScore := -MAX_SCORE
 	for _, move := range getMoves(game) {
-		gameCopy := common.CopyGame(game)
+		gameCopy, _ := common.CopyGame(game)
 		gameCopy.Move(move)
-		boardInput := ParseBoard(gameCopy.Position().Board())
+		boardInput := common.ParseBoard(gameCopy.Position().Board())
 		score, err := model.Evaluate(boardInput)
 		if err != nil {
 			log.Fatalf("Error evaluating move %v: %v", move.String(), err)
 		}
 		score = player * score
-		//log.Printf("MM %v, %v", move.String(), score)
 		if score >= bestScore {
 			if score > bestScore {
 				goodMoves = []*chess.Move{}

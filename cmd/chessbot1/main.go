@@ -14,7 +14,7 @@ import (
 const DEPTH = 3
 
 func main() {
-	modelPath, err := filepath.Abs("../../model/chessbot.pb")
+	modelPath, err := filepath.Abs("../../model/classifier.pb")
 	if err != nil {
 		log.Fatalf("Error reading path: %v", err)
 	}

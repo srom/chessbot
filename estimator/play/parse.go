@@ -6,7 +6,7 @@ import (
 
 const DIMENSION = 8*8*12
 
-type BoardInput [1][DIMENSION]int32
+type BoardInput [DIMENSION]float32
 
 var PIECES = [12]chess.Piece{
 	chess.BlackPawn,
@@ -90,18 +90,16 @@ var POSITIONS = [8 * 8]chess.Square{
 	chess.H8,
 }
 
-func ParseBoard(board *chess.Board) BoardInput {
-	input := [DIMENSION]int32{}
-	index := 0
+func ParseBoard(board *chess.Board) []float32 {
+	input := []float32{}
 	for _, piece := range PIECES {
 		for _, position := range POSITIONS {
 			if board.Piece(position) == piece {
-				input[index] = 1
+				input = append(input, 1.0)
 			} else {
-				input[index] = 0
+				input = append(input, 0.0)
 			}
-			index += 1
 		}
 	}
-	return BoardInput([1][DIMENSION]int32{input})
+	return input
 }
