@@ -1,15 +1,14 @@
 package fetch
 
 import (
+	"bufio"
 	"compress/gzip"
+	"encoding/binary"
 	"fmt"
 	"io"
 	"log"
 	"sync"
 	"time"
-
-	"bufio"
-	"encoding/binary"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -20,7 +19,7 @@ import (
 
 const BATCH_SIZE = 1e5
 const BUCKET_NAME = "chessbot"
-const KEY_FORMAT = "triplets/%v.pb.gz"
+const KEY_FORMAT = "triplets_all/%v.pb.gz"
 
 func FetchData(awsSession *session.Session, done <-chan struct{}, featureChannels ...<-chan *common.ChessBotTriplet) {
 	start := time.Now()
