@@ -18,7 +18,6 @@ var SOURCES = []string{
 	"http://www.ficsgames.org/dl/ficsgamesdb_2004_chess_nomovetimes_1502854.pgn.bz2",
 	"http://www.ficsgames.org/dl/ficsgamesdb_2003_chess_nomovetimes_1502855.pgn.bz2",
 	"http://www.ficsgames.org/dl/ficsgamesdb_2002_chess_nomovetimes_1502856.pgn.bz2",
-	"http://www.ficsgames.org/dl/ficsgamesdb_2002_chess_nomovetimes_1502856.pgn.bz2",
 	"http://www.ficsgames.org/dl/ficsgamesdb_2001_chess_nomovetimes_1502857.pgn.bz2",
 	"http://www.ficsgames.org/dl/ficsgamesdb_2000_chess_nomovetimes_1502858.pgn.bz2",
 }
