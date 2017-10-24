@@ -68,7 +68,7 @@ def yield_triplet_files_from_s3():
     s3 = boto3.resource('s3', region_name='eu-west-1')
     bucket = s3.Bucket('chessbot')
 
-    object_summary_items = list(bucket.objects.filter(Prefix='triplets'))
+    object_summary_items = list(bucket.objects.filter(Prefix='triplets_all'))
 
     logger.info('Triplet files found: %d', len(object_summary_items))
 
