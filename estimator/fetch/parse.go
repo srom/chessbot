@@ -16,6 +16,7 @@ const DIMENSION = 768 // 8 * 8 squares * 12 piece types
 const CHAN_BUFFER = 1e4
 
 func YieldTriplets(urls <-chan string) <-chan *common.ChessBotTriplet {
+	rand.Seed(time.Now().UnixNano())
 	features := make(chan *common.ChessBotTriplet, CHAN_BUFFER)
 	go func() {
 		defer close(features)
@@ -26,21 +27,34 @@ func YieldTriplets(urls <-chan string) <-chan *common.ChessBotTriplet {
 				log.Printf("Error reading url %v: %v", url, err)
 				continue
 			}
-
-			reader := bzip2.NewReader(response.Body)
-
-			ps := pgn.NewPGNScanner(reader)
-			for ps.Next() {
-				game, err := ps.Scan()
-				if err != nil {
-					log.Printf("Error reading game: %v", err)
-					continue
-				}
-				parseGame(game, features)
-			}
+			scanGames(response, features)
 		}
 	}()
 	return features
+}
+
+func scanGames(response *http.Response, features chan *common.ChessBotTriplet) {
+	defer func() {
+		if r := recover(); r != nil {
+		    log.Printf("Recovered: %v", r)
+		}
+	}()
+
+	reader := bzip2.NewReader(response.Body)
+
+	ps := pgn.NewPGNScanner(reader)
+	for ps.Next() {
+		scanGame(ps, features)
+	}
+}
+
+func scanGame(ps *pgn.PGNScanner, features chan *common.ChessBotTriplet) {
+	game, err := ps.Scan()
+	if err != nil {
+		log.Printf("Error reading game: %v", err)
+		return
+	}
+	parseGame(game, features)
 }
 
 func parseGame(game *pgn.Game, features chan *common.ChessBotTriplet) {
@@ -105,7 +119,6 @@ func getRandomNextBoard(boardFen string) (*pgn.Board, error) {
 }
 
 func randomMove(moves []*chess.Move) *chess.Move {
-	rand.Seed(time.Now().UnixNano())
 	index := rand.Intn(len(moves))
 	return moves[index]
 }
