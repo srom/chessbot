@@ -6,8 +6,7 @@ import tensorflow as tf
 INPUT_DIMENSION = 768  # 8 x 8 squares x 12 piece types
 HIDDEN_UNITS = 2048
 KAPPA = 10.0  # Emphasizes f(p) = -f(q)
-INITIAL_LEARNING_RATE = 0.001  # Default Adam learning rate
-DROPOUT_RATE = 0.5
+INITIAL_LEARNING_RATE = 0.01
 
 
 class ChessDNNEstimator(object):
@@ -54,12 +53,9 @@ class ChessDNNEstimator(object):
         })
 
     def _get_evaluation_function(self, X):
-        X_drop = tf.layers.dropout(X, rate=DROPOUT_RATE, training=self.training)
-        hidden_1 = tf.layers.dense(X_drop, HIDDEN_UNITS, activation=tf.nn.relu, name='hidden_1')
-        hidden_1_drop = tf.layers.dropout(hidden_1, rate=DROPOUT_RATE, training=self.training)
-        hidden_2 = tf.layers.dense(hidden_1_drop, HIDDEN_UNITS, activation=tf.nn.relu, name='hidden_2')
-        hidden_2_drop = tf.layers.dropout(hidden_2, rate=DROPOUT_RATE, training=self.training)
-        output = tf.layers.dense(hidden_2_drop, 1, activation=None, name='output')
+        hidden_1 = tf.layers.dense(X, HIDDEN_UNITS, activation=tf.nn.elu, name='hidden_1')
+        hidden_2 = tf.layers.dense(hidden_1, HIDDEN_UNITS, activation=tf.nn.elu, name='hidden_2')
+        output = tf.layers.dense(hidden_2, 1, activation=None, name='output')
         return output
 
     def _get_loss(self):
@@ -73,5 +69,5 @@ class ChessDNNEstimator(object):
         return tf.reduce_mean(loss_a + loss_b + loss_c, name='loss')
 
     def _get_training_op(self):
-        optimizer = tf.train.AdamOptimizer(learning_rate=INITIAL_LEARNING_RATE)
+        optimizer = tf.train.AdamOptimizer(learning_rate=INITIAL_LEARNING_RATE, epsilon=1e-5)
         return optimizer.minimize(self.loss)
