@@ -15,6 +15,8 @@ from .model import ChessDNNEstimator
 BATCH_SIZE = 1e3
 TRAIN_TEST_RATIO = 0.8
 ITERATIONS_BETWEEN_EXPORTS = 10
+INITIAL_LEARNING_RATE = 0.001
+ADAM_EPSILON = 1e-8
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s (%(levelname)s) %(message)s")
@@ -25,7 +27,10 @@ def main(model_dir, should_export):
     start = time.time()
     save_path = os.path.join(model_dir, 'chessbot')
 
-    estimator = ChessDNNEstimator()
+    estimator = ChessDNNEstimator(
+        learning_rate=INITIAL_LEARNING_RATE,
+        adam_epsilon=ADAM_EPSILON,
+    )
 
     saver = tf.train.Saver()
     with tf.Session() as session:

@@ -6,12 +6,11 @@ import tensorflow as tf
 INPUT_DIMENSION = 768  # 8 x 8 squares x 12 piece types
 HIDDEN_UNITS = 2048
 KAPPA = 10.0  # Emphasizes f(p) = -f(q)
-INITIAL_LEARNING_RATE = 0.01
 
 
 class ChessDNNEstimator(object):
 
-    def __init__(self):
+    def __init__(self, learning_rate, adam_epsilon):
         with tf.variable_scope("input"):
             self.X = tf.placeholder(tf.float32, shape=(None, INPUT_DIMENSION), name='X')
             self.X_parent = tf.placeholder(tf.float32, shape=(None, INPUT_DIMENSION), name='X_parent')
@@ -30,7 +29,7 @@ class ChessDNNEstimator(object):
             self.loss = self._get_loss()
 
         with tf.name_scope('train'):
-            self.training_op = self._get_training_op()
+            self.training_op = self._get_training_op(learning_rate, adam_epsilon)
 
     def train(self, session, X_parent, X_observed, X_random):
         session.run(self.training_op, feed_dict={
@@ -59,15 +58,16 @@ class ChessDNNEstimator(object):
         return output
 
     def _get_loss(self):
-        x_observed_random = self.f_observed - self.f_random
+        x_observed_random = self.f_random - self.f_observed
         x_parent_observed = self.f_parent + self.f_observed
 
-        loss_a = tf.log(1 + tf.sigmoid(x_observed_random))
-        loss_b = KAPPA * tf.log(1 + tf.sigmoid(x_parent_observed))
-        loss_c = KAPPA * tf.log(1 + tf.sigmoid(-x_parent_observed))
+        epsilon_log = 1e-3
+        loss_a = -tf.log(epsilon_log + tf.sigmoid(x_observed_random))
+        loss_b = -tf.log(epsilon_log + tf.sigmoid(KAPPA * x_parent_observed))
+        loss_c = -tf.log(epsilon_log + tf.sigmoid(-KAPPA * x_parent_observed))
 
         return tf.reduce_mean(loss_a + loss_b + loss_c, name='loss')
 
-    def _get_training_op(self):
-        optimizer = tf.train.AdamOptimizer(learning_rate=INITIAL_LEARNING_RATE, epsilon=1e-5)
+    def _get_training_op(self, learning_rate, epsilon):
+        optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate, epsilon=epsilon)
         return optimizer.minimize(self.loss)
