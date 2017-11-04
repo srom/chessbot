@@ -76,8 +76,8 @@ def main(output_path):
                     loss_train = train_model(session, estimator, X_train)
                     loss_test = test_model(session, estimator, X_test)
 
-                    square.train_losses.append(loss_train)
-                    square.test_losses.append(loss_test)
+                    square.train_losses.append(float(loss_train))
+                    square.test_losses.append(float(loss_test))
 
                     if loss_test < best_loss:
                         best_loss = loss_test
@@ -94,6 +94,8 @@ def main(output_path):
             grid.append(square)
             save_grid(output_path, grid)
             logger.info('Saved to %s', output_path)
+
+            tf.reset_default_graph()
 
     logger.info('DONE')
 
