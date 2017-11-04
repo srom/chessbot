@@ -15,6 +15,7 @@ from ..train import train_model, test_model
 
 BATCH_SIZE = 1e3
 TRAIN_TEST_RATIO = 0.8
+MAX_ITERATIONS_PER_SQUARE = 30
 
 LEARNING_RATES = [1e1, 1e0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5]
 ADAM_EPSILONS = [1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8]
@@ -31,6 +32,14 @@ class GridSquare(object):
         self.epsilon = epsilon
         self.train_losses = []
         self.test_losses = []
+
+    def to_dict(self):
+        return dict(
+            learning_rate=self.learning_rate,
+            epsilon=self.epsilon,
+            train_losses=self.train_losses,
+            test_losses=self.test_losses,
+        )
 
 
 def main(output_path):
@@ -78,6 +87,9 @@ def main(output_path):
                     logger.info('Training batch %d; Elapsed %ds; loss: %f (train: %f); best: %f (%d)',
                                 iteration, elapsed, loss_test, loss_train, best_loss, best_iteration)
 
+                    if iteration == MAX_ITERATIONS_PER_SQUARE:
+                        break
+
             logger.info('Saving grid...')
             grid.append(square)
             save_grid(output_path, grid)
@@ -87,7 +99,7 @@ def main(output_path):
 
 
 def save_grid(output_path, grid):
-    grid = dict(grid=grid)
+    grid = dict(grid=[g.to_dict() for f in grid])
     with open(output_path, 'w') as f:
         json.dump(grid, f)
 
