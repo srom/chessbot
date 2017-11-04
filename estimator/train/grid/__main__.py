@@ -99,7 +99,7 @@ def main(output_path):
 
 
 def save_grid(output_path, grid):
-    grid = dict(grid=[g.to_dict() for f in grid])
+    grid = dict(grid=[g.to_dict() for g in grid])
     with open(output_path, 'w') as f:
         json.dump(grid, f)
 
