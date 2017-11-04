@@ -10,13 +10,14 @@ import tensorflow as tf
 from .export import export_model
 from .load import yield_batch
 from .model import ChessDNNEstimator
+from .train import train_model, test_model
 
 
 BATCH_SIZE = 1e3
 TRAIN_TEST_RATIO = 0.8
 ITERATIONS_BETWEEN_EXPORTS = 10
 INITIAL_LEARNING_RATE = 0.001
-ADAM_EPSILON = 1e-8
+ADAM_EPSILON = 1e-5
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s (%(levelname)s) %(message)s")
@@ -42,12 +43,8 @@ def main(model_dir, should_export):
         last_exported_iteration = 0
         for X_train, X_test in yield_batch(BATCH_SIZE, TRAIN_TEST_RATIO):
             iteration += 1
-            X_p_train, X_o_train, X_r_train = X_train[:, 0, :], X_train[:, 1, :], X_train[:, 2, :]
-            X_p_test, X_o_test, X_r_test = X_test[:, 0, :], X_test[:, 1, :], X_test[:, 2, :]
-
-            estimator.train(session, X_p_train, X_o_train, X_r_train)
-            loss_test = estimator.compute_loss(session, X_p_test, X_o_test, X_r_test)
-            loss_train = estimator.compute_loss(session, X_p_train, X_o_train, X_r_train)
+            loss_train = train_model(session, estimator, X_train)
+            loss_test = test_model(session, estimator, X_test)
 
             if loss_test < best_loss:
                 best_loss = loss_test
