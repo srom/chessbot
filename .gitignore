@@ -39,3 +39,4 @@ env/
 *.sublime-workspace
 
 checkpoints/
+.ipynb_checkpoints
