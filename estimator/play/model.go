@@ -30,7 +30,7 @@ func (m *ChessBotModel) Evaluate(inputs [][]float32) ([]float32, error) {
 	}
 	output := []float32{}
 	for _, tensor := range tensors[0].Value().([][]float32) {
-		val := tensor[0]
+		val := -tensor[0]
 		output = append(output, val)
 	}
 	return output, nil

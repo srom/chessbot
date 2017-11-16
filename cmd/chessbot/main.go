@@ -15,7 +15,7 @@ import (
 const DEPTH = 3
 
 func main() {
-	modelPath, err := filepath.Abs("../../model/estimator.pb")
+	modelPath, err := filepath.Abs("../../model/chessbot.pb")
 	if err != nil {
 		log.Fatalf("Error reading path: %v", err)
 	}
@@ -26,17 +26,13 @@ func main() {
 	defer model.Close()
 
 	game := chess.NewGame()
-	for _, moveStr := range []string{
-		"d4", "d5",
-		"Nf3", "e6",
-		"c4", "Nf6",
-		"Nc3", "Be7",
-		"e3", "O-O",
-		"Bd3", "h6",
-	} {
-		game.MoveStr(moveStr)
-	}
-
+	//for _, moveStr := range []string{
+	//	"d4", "d5",
+	//	"Nf3", "d6",
+	//	"Bc4", "Nf6",
+	//} {
+	//	game.MoveStr(moveStr)
+	//}
 
 	fmt.Print(game.Position().Board().Draw())
 	fmt.Print("\n")
@@ -48,12 +44,13 @@ func main() {
 		start := time.Now()
 		player = -1 * player
 
-		if player == -1.0 {
+		promptForMove()
+		if player == -5.0 {
 			humanMove(game)
 		} else {
-			fmt.Println("Chessbot is thinking...")
-			moveResult := play.Negamax(model, game, DEPTH, -1*play.MAX_SCORE, play.MAX_SCORE, player)
-			err = game.Move(moveResult.Move)
+			fmt.Printf("Chessbot is thinking... (depth %d)\n", DEPTH)
+			_, moves := play.NegamaxSync(model, game, DEPTH, -play.MAX_SCORE, play.MAX_SCORE, player)
+			err = game.Move(moves[0])
 		}
 
 		if err != nil {
@@ -61,7 +58,7 @@ func main() {
 		}
 
 		if moveUnit%1 == 0 {
-			log.Printf("Round %d", moveUnit/2)
+			log.Printf("Round %d", moveUnit)
 			fmt.Print(game.Position().Board().Draw())
 			log.Printf("Elapsed: %v", time.Since(start))
 			fmt.Print("\n")
