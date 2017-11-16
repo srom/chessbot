@@ -15,7 +15,7 @@ import (
 const DEPTH = 3
 
 func main() {
-	modelPath, err := filepath.Abs("../../model/chessbot.pb")
+	modelPath, err := filepath.Abs("../../model/estimator.pb")
 	if err != nil {
 		log.Fatalf("Error reading path: %v", err)
 	}
@@ -44,8 +44,8 @@ func main() {
 		start := time.Now()
 		player = -1 * player
 
-		promptForMove()
-		if player == -5.0 {
+		//promptForMove()
+		if player == 1.0 {
 			humanMove(game)
 		} else {
 			fmt.Printf("Chessbot is thinking... (depth %d)\n", DEPTH)
