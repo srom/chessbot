@@ -14,26 +14,52 @@ from common.triplets_pb2 import ChessBotTriplet
 logger = logging.getLogger(__name__)
 
 
-def yield_batch(batch_size, train_test_ratio):
+def yield_batch(batch_size, train_test_ratio, flat=True):
     triplets = []
     logger.info('Loading batch')
     for triplet in yield_triplets():
         triplets.append(triplet)
         if len(triplets) == batch_size:
-            triplet_inputs = get_triplet_inputs(triplets)
+            triplet_inputs = get_triplet_inputs(triplets, flat=flat)
             yield get_train_and_test_inputs(triplet_inputs, train_test_ratio)
             triplets = []
 
 
-def get_triplet_inputs(triplets):
+def get_triplet_inputs(triplets, flat=True):
+    if flat:
+        transform = lambda x: x
+    else:
+        transform = lambda x: inputs_2d(x)
+
     items = []
     for triplet in triplets:
         items.append([
-            triplet.parent.pieces,
-            triplet.observed.pieces,
-            triplet.random.pieces,
+            transform(triplet.parent.pieces),
+            transform(triplet.observed.pieces),
+            transform(triplet.random.pieces),
         ])
     return np.array(items, dtype=np.float32)
+
+
+def inputs_2d(board):
+    """
+    >>> board = np.random.randint(2, size=8*8*12)
+    >>> output = inputs_2d(board)
+    >>> np.array(output).shape
+    (8, 8, 12)
+    """
+    rows = []
+    for row in xrange(8):
+        columns = []
+        for col in xrange(8):
+            channels = []
+            for channel in xrange(12):
+                element_index = row * col + channel * 64
+                element = board[element_index]
+                channels.append(element)
+            columns.append(channels)
+        rows.append(columns)
+    return rows
 
 
 def get_train_and_test_inputs(triplets, train_test_ratio):
