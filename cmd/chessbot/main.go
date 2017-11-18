@@ -12,7 +12,7 @@ import (
 	"github.com/srom/chessbot/estimator/play"
 )
 
-const DEPTH = 3
+const DEPTH = 5
 
 func main() {
 	modelPath, err := filepath.Abs("../../model/estimator.pb")
@@ -45,7 +45,7 @@ func main() {
 		player = -1 * player
 
 		//promptForMove()
-		if player == 1.0 {
+		if player == 5.0 {
 			humanMove(game)
 		} else {
 			fmt.Printf("Chessbot is thinking... (depth %d)\n", DEPTH)

@@ -133,14 +133,14 @@ func NegamaxSync(
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("%v", score[0])
+		//log.Printf("%v", score[0])
 		return score[0], []*chess.Move{}
 	}
 
 	bestScore := alpha
 	bestMoves := []*chess.Move{}
 	for _, move := range getMoves(model, game) {
-		log.Printf("\t%d %v", depth, move)
+		//log.Printf("\t%d %v", depth, move)
 		gameCopy, err := common.CopyGame(game)
 		if err != nil {
 			log.Fatal(err)
@@ -167,7 +167,7 @@ func NegamaxSync(
 		}
 	}
 
-	if depth == 3 {
+	if depth == 5 {
 		gameCopy, err := common.CopyGame(game)
 		if err != nil {
 			log.Fatal(err)
@@ -176,12 +176,12 @@ func NegamaxSync(
 			gameCopy.Move(move)
 		}
 
-		log.Printf(
-			"Moves: %v; Score: %f\nLAST BOARD:%v",
-			bestMoves,
-			bestScore,
-			gameCopy.Position().Board().Draw(),
-		)
+		//log.Printf(
+		//	"Moves: %v; Score: %f\nLAST BOARD:%v",
+		//	bestMoves,
+		//	bestScore,
+		//	gameCopy.Position().Board().Draw(),
+		//)
 	}
 
 	return bestScore, bestMoves
@@ -242,7 +242,7 @@ func getMoves(model *ChessBotModel, game *chess.Game) []*chess.Move {
 	for _, mr := range results {
 		movesSorted = append(movesSorted, mr.Move)
 	}
-	return movesSorted[:2]
+	return movesSorted[:3]
 }
 
 func getMovesCheap(model *ChessBotModel, game *chess.Game) []*chess.Move {
