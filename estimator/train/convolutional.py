@@ -9,7 +9,7 @@ FILTERS = 10
 KERNEL_SIZE = 3
 STRIDES = [1, 1]
 PADDING = 'SAME'
-DENSE_HIDDEN_UNITS = 1024
+DENSE_HIDDEN_UNITS = 2048
 
 KAPPA = 10.0  # Emphasizes f(p) = -f(q)
 
@@ -65,7 +65,8 @@ class ChessConvolutionalNetwork(object):
         conv2 = self._get_convolutional_layer(conv1)
         conv2_flat = self._reshape_conv_layer(conv2)
         dense = tf.layers.dense(conv2_flat, DENSE_HIDDEN_UNITS, activation=tf.nn.relu)
-        output = tf.layers.dense(dense, 1, activation=None, name='output')
+        dense_dropout = tf.layers.dropout(dense, rate=0.5, training=self.training)
+        output = tf.layers.dense(dense_dropout, 1, activation=None, name='output')
         return output
 
     def _get_convolutional_layer(self, input):
