@@ -8,6 +8,7 @@ CHANNELS = 12
 FILTERS = 10
 KERNEL_SIZE = 3
 STRIDES = [1, 1]
+PADDING = 'SAME'
 DENSE_HIDDEN_UNITS = 1024
 
 KAPPA = 10.0  # Emphasizes f(p) = -f(q)
@@ -57,11 +58,26 @@ class ChessConvolutionalNetwork(object):
         })
 
     def _get_evaluation_function(self, X):
-        conv1 = tf.layers.conv2d(X, filters=FILTERS, kernel_size=KERNEL_SIZE, strides=STRIDES, padding='SAME')
-        conv2 = tf.layers.conv2d(conv1, filters=FILTERS, kernel_size=KERNEL_SIZE, strides=STRIDES, padding='SAME')
-        dense = tf.layers.dense(conv2, DENSE_HIDDEN_UNITS, activation=tf.nn.elu)
+        conv1 = self._get_convolutional_layer(X)
+        conv2 = self._get_convolutional_layer(conv1)
+        conv2_flat = self._reshape_conv_layer(conv2)
+        dense = tf.layers.dense(conv2_flat, DENSE_HIDDEN_UNITS, activation=tf.nn.relu)
         output = tf.layers.dense(dense, 1, activation=None, name='output')
         return output
+
+    def _get_convolutional_layer(self, input):
+        return tf.layers.conv2d(
+            input,
+            filters=FILTERS,
+            kernel_size=KERNEL_SIZE,
+            strides=STRIDES,
+            padding=PADDING,
+            activation=tf.nn.relu
+        )
+
+    def _reshape_conv_layer(self, conv):
+        _, width, height, channels = tf.shape(conv)
+        return tf.reshape(conv, [-1, width * height * channels])
 
     def _get_loss(self):
         x_observed_random = self.f_random - self.f_observed
