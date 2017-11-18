@@ -18,10 +18,10 @@ class ChessConvolutionalNetwork(object):
 
     def __init__(self, learning_rate, adam_epsilon):
         with tf.variable_scope("input"):
-            self.X = tf.placeholder(tf.float32, shape=(None, WIDTH, HEIGHT, CHANNELS), name='X')
-            self.X_parent = tf.placeholder(tf.float32, shape=(None, WIDTH, HEIGHT, CHANNELS), name='X_parent')
-            self.X_observed = tf.placeholder(tf.float32, shape=(None, WIDTH, HEIGHT, CHANNELS), name='X_observed')
-            self.X_random = tf.placeholder(tf.float32, shape=(None, WIDTH, HEIGHT, CHANNELS), name='X_random')
+            self.X = self._get_input('X')
+            self.X_parent = self._get_input('X_parent')
+            self.X_observed = self._get_input('X_observed')
+            self.X_random = self._get_input('X_random')
 
         with tf.variable_scope("f_p"):
             self.training = tf.placeholder_with_default(False, shape=(), name='training')
@@ -56,6 +56,9 @@ class ChessConvolutionalNetwork(object):
         return session.run(self.f, feed_dict={
             self.X: X
         })
+
+    def _get_input(self, name):
+        return tf.placeholder(tf.float32, shape=(None, WIDTH, HEIGHT, CHANNELS), name=name)
 
     def _get_evaluation_function(self, X):
         conv1 = self._get_convolutional_layer(X)
