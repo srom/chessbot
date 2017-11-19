@@ -9,7 +9,7 @@ import tensorflow as tf
 
 from .export import export_model
 from .load import yield_batch
-from .model import ChessDNNEstimator
+from .convolutional import ChessConvolutionalNetwork
 from .train import train_model, test_model
 
 
@@ -28,7 +28,7 @@ def main(model_dir, should_export):
     start = time.time()
     save_path = os.path.join(model_dir, 'chessbot')
 
-    estimator = ChessDNNEstimator(
+    estimator = ChessConvolutionalNetwork(
         learning_rate=INITIAL_LEARNING_RATE,
         adam_epsilon=ADAM_EPSILON,
     )
@@ -41,7 +41,7 @@ def main(model_dir, should_export):
         best_loss = float('inf')
         best_iteration = 0
         last_exported_iteration = 0
-        for X_train, X_test in yield_batch(BATCH_SIZE, TRAIN_TEST_RATIO):
+        for X_train, X_test in yield_batch(BATCH_SIZE, TRAIN_TEST_RATIO, flat=False):
             iteration += 1
             loss_train = train_model(session, estimator, X_train)
             loss_test = test_model(session, estimator, X_test)

@@ -61,27 +61,27 @@ class ChessConvolutionalNetwork(object):
         return tf.placeholder(tf.float32, shape=(None, WIDTH, HEIGHT, CHANNELS), name=name)
 
     def _get_evaluation_function(self, X):
-        conv1 = self._get_convolutional_layer(X)
-        conv2 = self._get_convolutional_layer(conv1)
+        conv1 = self._get_convolutional_layer(X, 'conv1')
+        conv2 = self._get_convolutional_layer(conv1, 'conv2')
         conv2_flat = self._reshape_conv_layer(conv2)
-        dense = tf.layers.dense(conv2_flat, DENSE_HIDDEN_UNITS, activation=tf.nn.relu)
+        dense = tf.layers.dense(conv2_flat, DENSE_HIDDEN_UNITS, activation=tf.nn.relu, name='dense')
         dense_dropout = tf.layers.dropout(dense, rate=0.5, training=self.training)
         output = tf.layers.dense(dense_dropout, 1, activation=None, name='output')
         return output
 
-    def _get_convolutional_layer(self, input):
+    def _get_convolutional_layer(self, input, name):
         return tf.layers.conv2d(
             input,
             filters=FILTERS,
             kernel_size=KERNEL_SIZE,
             strides=STRIDES,
             padding=PADDING,
-            activation=tf.nn.relu
+            activation=tf.nn.relu,
+            name=name,
         )
 
     def _reshape_conv_layer(self, conv):
-        _, width, height, channels = tf.shape(conv)
-        return tf.reshape(conv, [-1, width * height * channels])
+        return tf.contrib.layers.flatten(conv)
 
     def _get_loss(self):
         x_observed_random = self.f_random - self.f_observed
