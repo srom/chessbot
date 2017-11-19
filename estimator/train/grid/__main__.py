@@ -9,7 +9,7 @@ import time
 import tensorflow as tf
 
 from ..load import yield_batch
-from ..model import ChessDNNEstimator
+from ..convolutional import ChessConvolutionalNetwork
 from ..train import train_model, test_model
 
 
@@ -59,7 +59,7 @@ def main(output_path):
                 epsilon
             )
 
-            estimator = ChessDNNEstimator(
+            estimator = ChessConvolutionalNetwork(
                 learning_rate=initial_learning_rate,
                 adam_epsilon=epsilon,
             )
@@ -71,7 +71,7 @@ def main(output_path):
                 iteration = 0
                 best_loss = float('inf')
                 best_iteration = 0
-                for X_train, X_test in yield_batch(BATCH_SIZE, TRAIN_TEST_RATIO):
+                for X_train, X_test in yield_batch(BATCH_SIZE, TRAIN_TEST_RATIO, flat=False):
                     iteration += 1
                     loss_train = train_model(session, estimator, X_train)
                     loss_test = test_model(session, estimator, X_test)
@@ -111,7 +111,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format="%(asctime)s (%(levelname)s) %(message)s")
     dir_path = os.path.dirname(os.path.realpath(__file__))
     parser = argparse.ArgumentParser()
-    parser.add_argument('--output', default=os.path.join(dir_path, 'grid.json'))
+    parser.add_argument('--output', default=os.path.join(dir_path, 'grid_conv.json'))
     args = parser.parse_args()
     output_path = args.output
     logger.info('Output file path: %s', output_path)
