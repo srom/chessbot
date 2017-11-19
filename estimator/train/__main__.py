@@ -16,8 +16,8 @@ from .train import train_model, test_model
 BATCH_SIZE = 1e3
 TRAIN_TEST_RATIO = 0.8
 ITERATIONS_BETWEEN_EXPORTS = 10
-INITIAL_LEARNING_RATE = 0.001
-ADAM_EPSILON = 0.1
+INITIAL_LEARNING_RATE = 0.1
+ADAM_EPSILON = 1.0
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s (%(levelname)s) %(message)s")
