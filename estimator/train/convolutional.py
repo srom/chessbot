@@ -45,12 +45,19 @@ class ChessConvolutionalNetwork(object):
             self.training: True,
         })
 
-    def compute_loss(self, session, X_parent, X_observed, X_random):
-        return session.run(self.loss, feed_dict={
-            self.X_parent: X_parent,
-            self.X_observed: X_observed,
-            self.X_random: X_random,
-        })
+    def compute_loss(self, session, X_parent, X_observed, X_random, detailed=False):
+        if not detailed:
+            return session.run(self.loss, feed_dict={
+                self.X_parent: X_parent,
+                self.X_observed: X_observed,
+                self.X_random: X_random,
+            })
+        else:
+            return session.run([self.loss_a, self.loss_b, self.loss_c, self.loss], feed_dict={
+                self.X_parent: X_parent,
+                self.X_observed: X_observed,
+                self.X_random: X_random,
+            })
 
     def evaluate(self, session, X):
         return session.run(self.f, feed_dict={
@@ -91,6 +98,10 @@ class ChessConvolutionalNetwork(object):
         loss_a = -tf.log(epsilon_log + tf.sigmoid(x_observed_random))
         loss_b = -tf.log(epsilon_log + tf.sigmoid(KAPPA * x_parent_observed))
         loss_c = -tf.log(epsilon_log + tf.sigmoid(-KAPPA * x_parent_observed))
+
+        self.loss_a = tf.reduce_mean(loss_a, name='loss_a')
+        self.loss_b = tf.reduce_mean(loss_b, name='loss_b')
+        self.loss_c = tf.reduce_mean(loss_c, name='loss_c')
 
         return tf.reduce_mean(loss_a + loss_b + loss_c, name='loss')
 

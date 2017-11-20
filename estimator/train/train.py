@@ -9,4 +9,4 @@ def train_model(session, estimator, X_train):
 
 def test_model(session, estimator, X_test):
     X_p_test, X_o_test, X_r_test = X_test[:, 0, :], X_test[:, 1, :], X_test[:, 2, :]
-    return estimator.compute_loss(session, X_p_test, X_o_test, X_r_test)
+    return estimator.compute_loss(session, X_p_test, X_o_test, X_r_test, detailed=True)

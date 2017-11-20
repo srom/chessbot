@@ -43,8 +43,8 @@ def main(model_dir, should_export):
         last_exported_iteration = 0
         for X_train, X_test in yield_batch(BATCH_SIZE, TRAIN_TEST_RATIO, flat=False):
             iteration += 1
-            loss_train = train_model(session, estimator, X_train)
-            loss_test = test_model(session, estimator, X_test)
+            # loss_train = train_model(session, estimator, X_train)
+            loss_a, loss_b, loss_c, loss_test = test_model(session, estimator, X_test)
 
             if loss_test < best_loss:
                 best_loss = loss_test
@@ -52,8 +52,8 @@ def main(model_dir, should_export):
                 saver.save(session, save_path, global_step=iteration)
 
             elapsed = int(time.time() - start)
-            logger.info('Training batch %d; Elapsed %ds; loss: %f (train: %f); best: %f (%d)',
-                        iteration, elapsed, loss_test, loss_train, best_loss, best_iteration)
+            logger.info('Training batch %d; Elapsed %ds; loss: %f (%f + %f); best: %f (%d)',
+                        iteration, elapsed, loss_test, loss_a, loss_b + loss_c, best_loss, best_iteration)
 
             if ready_to_export(should_export, iteration, last_exported_iteration, best_iteration):
                 export_model(saver, model_dir)
