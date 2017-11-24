@@ -16,8 +16,8 @@ from .train import train_model, test_model
 BATCH_SIZE = 1e3
 TRAIN_TEST_RATIO = 0.8
 ITERATIONS_BETWEEN_EXPORTS = 10
-INITIAL_LEARNING_RATE = 0.1
-ADAM_EPSILON = 1.0
+INITIAL_LEARNING_RATE = 0.01
+ADAM_EPSILON = 0.10
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s (%(levelname)s) %(message)s")
@@ -44,7 +44,7 @@ def main(model_dir, should_export):
         for X_train, X_test in yield_batch(BATCH_SIZE, TRAIN_TEST_RATIO, flat=False):
             iteration += 1
             # loss_train = train_model(session, estimator, X_train)
-            loss_a, loss_b, loss_c, loss_test = test_model(session, estimator, X_test)
+            loss_a, loss_b, loss_c, loss_test = test_model(session, estimator, X_test, detailed=True)
 
             if loss_test < best_loss:
                 best_loss = loss_test

@@ -15,10 +15,10 @@ from ..train import train_model, test_model
 
 BATCH_SIZE = 1e3
 TRAIN_TEST_RATIO = 0.8
-MAX_ITERATIONS_PER_SQUARE = 30
+MAX_ITERATIONS_PER_SQUARE = 50
 
-LEARNING_RATES = [1e1, 1e0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5]
-ADAM_EPSILONS = [1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8]
+LEARNING_RATES = [1e0, 1e-1, 1e-2, 1e-3, 1e-4]
+ADAM_EPSILONS = [1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7]
 
 
 logger = logging.getLogger(__name__)
@@ -111,7 +111,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format="%(asctime)s (%(levelname)s) %(message)s")
     dir_path = os.path.dirname(os.path.realpath(__file__))
     parser = argparse.ArgumentParser()
-    parser.add_argument('--output', default=os.path.join(dir_path, 'grid_conv.json'))
+    parser.add_argument('--output', default=os.path.join(dir_path, 'grid_conv2.json'))
     args = parser.parse_args()
     output_path = args.output
     logger.info('Output file path: %s', output_path)

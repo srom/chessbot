@@ -95,7 +95,7 @@ class ChessConvolutionalNetwork(object):
         x_parent_observed = self.f_parent + self.f_observed
 
         epsilon_log = 1e-3
-        loss_a = -tf.log(epsilon_log + tf.sigmoid(x_observed_random))
+        loss_a = -tf.log(epsilon_log + tf.sigmoid(KAPPA * x_observed_random))
         loss_b = -tf.log(epsilon_log + tf.sigmoid(KAPPA * x_parent_observed))
         loss_c = -tf.log(epsilon_log + tf.sigmoid(-KAPPA * x_parent_observed))
 

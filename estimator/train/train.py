@@ -7,6 +7,6 @@ def train_model(session, estimator, X_train):
     return estimator.compute_loss(session, X_p_train, X_o_train, X_r_train)
 
 
-def test_model(session, estimator, X_test):
+def test_model(session, estimator, X_test, detailed=False):
     X_p_test, X_o_test, X_r_test = X_test[:, 0, :], X_test[:, 1, :], X_test[:, 2, :]
-    return estimator.compute_loss(session, X_p_test, X_o_test, X_r_test, detailed=True)
+    return estimator.compute_loss(session, X_p_test, X_o_test, X_r_test, detailed=detailed)
